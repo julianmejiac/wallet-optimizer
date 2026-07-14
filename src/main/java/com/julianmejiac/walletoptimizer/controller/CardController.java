@@ -4,6 +4,7 @@ import com.julianmejiac.walletoptimizer.model.Card;
 import com.julianmejiac.walletoptimizer.model.RewardRule;
 import com.julianmejiac.walletoptimizer.service.CardService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,6 +47,17 @@ public class CardController {
         return cardService.addReward(cardId,rewardRule);
 
     }
+    @DeleteMapping("/cards/{cardId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCard(@PathVariable Long cardId){
+        cardService.deleteCard(cardId);
+    }
+    @DeleteMapping("/cards/{cardId}/reward-rules/{rewardId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteReward(@PathVariable Long cardId, @PathVariable Long rewardId){
+        cardService.deleteReward(cardId,rewardId);
+    }
+
 
 
 }

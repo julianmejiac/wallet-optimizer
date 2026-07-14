@@ -1,6 +1,7 @@
 package com.julianmejiac.walletoptimizer.service;
 
 import com.julianmejiac.walletoptimizer.exception.CardNotFoundException;
+import com.julianmejiac.walletoptimizer.exception.RewardRuleNotFoundException;
 import com.julianmejiac.walletoptimizer.model.Card;
 import com.julianmejiac.walletoptimizer.model.RewardRule;
 import com.julianmejiac.walletoptimizer.repository.CardRepository;
@@ -45,12 +46,33 @@ public class CardService {
         throw new CardNotFoundException("Card not found with id "+cardId);
     }
 
+    public void deleteCard(Long cardId){
+        Card card=getCardById(cardId);
+        cardRepository.delete(card);
+    }
+
 
 
     public Card addReward(Long cardId,RewardRule rewardRule){
         Card card=getCardById(cardId);
         card.addRewardRule(rewardRule);
         return cardRepository.save(card);
+    }
+
+    public RewardRule getRewardRuleById(Card card,Long rewardId){
+        for(RewardRule rewardRule: card.getRewardRules() ){
+            if (rewardRule.getId().equals(rewardId)){
+                return rewardRule;
+            }
+        }
+        throw new RewardRuleNotFoundException("No reward rule found with id: "+rewardId);
+    }
+
+    public void deleteReward(Long cardId, Long rewardId){
+        Card card=getCardById(cardId);
+        RewardRule rewardRule=getRewardRuleById(card,rewardId);
+        card.getRewardRules().remove(rewardRule);
+        cardRepository.save(card);
     }
 
     public List<Card> recommendCard(String category){
