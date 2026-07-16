@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.plaf.basic.BasicDesktopIconUI;
 import java.util.List;
 
 @RestController
@@ -46,6 +47,14 @@ public class CardController {
     public Card addReward(@PathVariable Long cardId,@Valid @RequestBody RewardRule rewardRule){
         return cardService.addReward(cardId,rewardRule);
 
+    }
+    @PutMapping("/cards/{cardId}")
+    public Card updateCard(@PathVariable Long cardId, @Valid @RequestBody Card updatedCard){
+        return cardService.updateCard(cardId, updatedCard);
+    }
+    @PutMapping("/cards/{cardId}/reward-rules/{rewardId}")
+    public RewardRule updateReward(@PathVariable Long cardId, @PathVariable Long rewardId, @Valid @RequestBody RewardRule updatedRule){
+        return cardService.updateReward(cardId,rewardId, updatedRule);
     }
     @DeleteMapping("/cards/{cardId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

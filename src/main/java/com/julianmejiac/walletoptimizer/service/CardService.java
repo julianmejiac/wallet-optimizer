@@ -74,6 +74,24 @@ public class CardService {
         card.getRewardRules().remove(rewardRule);
         cardRepository.save(card);
     }
+    public Card updateCard(Long cardId, Card updatedCard){
+        Card card=getCardById(cardId);
+        card.setName(updatedCard.getName());
+        card.setIssuer(updatedCard.getIssuer());
+        card.setNetwork(updatedCard.getNetwork());
+        card.setAnnualFee(updatedCard.getAnnualFee());
+        card.setActive(updatedCard.getActive());
+        return cardRepository.save(card);
+    }
+
+    public RewardRule updateReward(Long cardId, Long rewardId, RewardRule updatedRule){
+        Card card= getCardById(cardId);
+        RewardRule rewardRule=getRewardRuleById(card,rewardId);
+        rewardRule.setCategory(updatedRule.getCategory());
+        rewardRule.setCashbackPercent(updatedRule.getCashbackPercent());
+        cardRepository.save(card);
+        return rewardRule;
+    }
 
     public List<Card> recommendCard(String category){
         List<Card> bestCards=new ArrayList<>();
