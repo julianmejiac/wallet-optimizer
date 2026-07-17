@@ -93,20 +93,19 @@ public class CardService {
         return rewardRule;
     }
 
-    public List<Card> recommendCard(String category){
-        List<Card> bestCards=new ArrayList<>();
-        double bestReward=0.0;
-        for (Card card :cardRepository.findAll()){
-            for(RewardRule rewardRule:card.getRewardRules()){
-                double cashback=rewardRule.getCashbackPercent();
-                if (rewardRule.getCategory().equalsIgnoreCase(category)){
-                    if(bestReward==cashback){
+    public List<Card> recommendCard(String category) {
+        List<Card> bestCards = new ArrayList<>();
+        double bestReward = 0.0;
+        for (Card card : cardRepository.findAll()) {
+            for (RewardRule rewardRule : card.getRewardRules()) {
+                double cashback = rewardRule.getCashbackPercent();
+                if (rewardRule.getCategory().equalsIgnoreCase(category)) {
+                    if (bestReward == cashback) {
                         bestCards.add(card);
-                    }
-                    else if(bestReward<cashback){
+                    } else if (bestReward < cashback) {
                         bestCards.clear();
                         bestCards.add(card);
-                        bestReward=cashback;
+                        bestReward = cashback;
                     }
 
 
