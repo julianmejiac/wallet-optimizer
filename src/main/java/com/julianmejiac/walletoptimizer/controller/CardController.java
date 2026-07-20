@@ -1,5 +1,6 @@
 package com.julianmejiac.walletoptimizer.controller;
 
+import com.julianmejiac.walletoptimizer.dto.CardRecommendationDTO;
 import com.julianmejiac.walletoptimizer.model.Card;
 import com.julianmejiac.walletoptimizer.model.RewardRule;
 import com.julianmejiac.walletoptimizer.service.CardService;
@@ -32,7 +33,7 @@ public class CardController {
         return cardService.getCardById(cardId).getRewardRules();
     }
     @GetMapping("/recommend")
-    public List<Card> recommendCard(@RequestParam String category){
+    public List<CardRecommendationDTO> recommendCard(@RequestParam String category){
         return cardService.recommendCard(category);
     }
     @GetMapping("/cards/search")

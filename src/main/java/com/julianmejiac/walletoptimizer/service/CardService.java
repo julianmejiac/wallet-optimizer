@@ -1,5 +1,6 @@
 package com.julianmejiac.walletoptimizer.service;
 
+import com.julianmejiac.walletoptimizer.dto.CardRecommendationDTO;
 import com.julianmejiac.walletoptimizer.exception.CardNotFoundException;
 import com.julianmejiac.walletoptimizer.exception.RewardRuleNotFoundException;
 import com.julianmejiac.walletoptimizer.model.Card;
@@ -93,18 +94,20 @@ public class CardService {
         return rewardRule;
     }
 
-    public List<Card> recommendCard(String category) {
-        List<Card> bestCards = new ArrayList<>();
+    public List<CardRecommendationDTO> recommendCard(String category) {
+        List<CardRecommendationDTO> bestCards = new ArrayList<>();
         double bestReward = 0.0;
-        for (Card card : cardRepository.findAll()) {
+        for (Card card: cardRepository.findAll()) {
             for (RewardRule rewardRule : card.getRewardRules()) {
                 double cashback = rewardRule.getCashbackPercent();
                 if (rewardRule.getCategory().equalsIgnoreCase(category)) {
                     if (bestReward == cashback) {
-                        bestCards.add(card);
+                        CardRecommendationDTO cardDTO = new CardRecommendationDTO(card.getName(),cashback);
+                                bestCards.add(cardDTO);
                     } else if (bestReward < cashback) {
                         bestCards.clear();
-                        bestCards.add(card);
+                        CardRecommendationDTO cardDTO = new CardRecommendationDTO(card.getName(),cashback);
+                        bestCards.add(cardDTO);
                         bestReward = cashback;
                     }
 

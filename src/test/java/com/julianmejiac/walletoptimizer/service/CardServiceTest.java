@@ -1,5 +1,6 @@
 package com.julianmejiac.walletoptimizer.service;
 
+import com.julianmejiac.walletoptimizer.dto.CardRecommendationDTO;
 import com.julianmejiac.walletoptimizer.exception.CardNotFoundException;
 import com.julianmejiac.walletoptimizer.exception.RewardRuleNotFoundException;
 import com.julianmejiac.walletoptimizer.model.Card;
@@ -92,7 +93,7 @@ public class CardServiceTest {
         setupReccommendCards();
         when(cardRepository.findAll()).thenReturn(List.of(card1,card2,card3));
         //Act
-        List<Card> results=cardService.recommendCard("gas");
+        List<CardRecommendationDTO> results=cardService.recommendCard("gas");
         //Assert
         assertEquals(List.of(card1),results);
 
@@ -103,7 +104,7 @@ public class CardServiceTest {
         setupReccommendCards();
         when(cardRepository.findAll()).thenReturn(List.of(card1,card2,card3));
         //Act
-        List<Card> results=cardService.recommendCard("Restaurant");
+        List<CardRecommendationDTO> results=cardService.recommendCard("Restaurant");
         //Assert
         assertEquals(List.of(card2,card3),results);
 
@@ -114,7 +115,7 @@ public class CardServiceTest {
         setupReccommendCards();
         when(cardRepository.findAll()).thenReturn(List.of(card1,card2,card3));
         //Act
-        List<Card> results=cardService.recommendCard("Transit");
+        List<CardRecommendationDTO> results=cardService.recommendCard("Transit");
         //Assert
         assertTrue(results.isEmpty() );
 
