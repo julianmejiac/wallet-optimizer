@@ -1,6 +1,7 @@
 package com.julianmejiac.walletoptimizer.controller;
 
 import com.julianmejiac.walletoptimizer.dto.CardRecommendationDTO;
+import com.julianmejiac.walletoptimizer.dto.CreateCardRequest;
 import com.julianmejiac.walletoptimizer.model.Card;
 import com.julianmejiac.walletoptimizer.model.RewardRule;
 import com.julianmejiac.walletoptimizer.service.CardService;
@@ -41,8 +42,8 @@ public class CardController {
         return cardService.getCardsByName(name);
     }
     @PostMapping("/cards")
-    public Card addCard(@Valid @RequestBody Card card){
-        return cardService.addCard(card);
+    public Card addCard(@Valid @RequestBody CreateCardRequest cardRequest){
+        return cardService.addCard(cardRequest);
     }
     @PostMapping("/cards/{cardId}/reward-rules")
     public Card addReward(@PathVariable Long cardId,@Valid @RequestBody RewardRule rewardRule){

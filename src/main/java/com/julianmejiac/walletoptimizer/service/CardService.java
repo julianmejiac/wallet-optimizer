@@ -1,6 +1,7 @@
 package com.julianmejiac.walletoptimizer.service;
 
 import com.julianmejiac.walletoptimizer.dto.CardRecommendationDTO;
+import com.julianmejiac.walletoptimizer.dto.CreateCardRequest;
 import com.julianmejiac.walletoptimizer.exception.CardNotFoundException;
 import com.julianmejiac.walletoptimizer.exception.RewardRuleNotFoundException;
 import com.julianmejiac.walletoptimizer.model.Card;
@@ -32,7 +33,8 @@ public class CardService {
         }
         return matchingCards;
     }
-    public Card  addCard(Card card){
+    public Card  addCard(CreateCardRequest cardRequest){
+        Card card=new Card(cardRequest.name(),  cardRequest.issuer(), cardRequest.network(), cardRequest.annualFee());
         return cardRepository.save(card);
     }
 
