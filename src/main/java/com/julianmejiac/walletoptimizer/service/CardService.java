@@ -2,6 +2,8 @@ package com.julianmejiac.walletoptimizer.service;
 
 import com.julianmejiac.walletoptimizer.dto.CardRecommendationDTO;
 import com.julianmejiac.walletoptimizer.dto.CreateCardRequest;
+import com.julianmejiac.walletoptimizer.dto.RewardRuleRequest;
+import com.julianmejiac.walletoptimizer.dto.UpdateCardRequest;
 import com.julianmejiac.walletoptimizer.exception.CardNotFoundException;
 import com.julianmejiac.walletoptimizer.exception.RewardRuleNotFoundException;
 import com.julianmejiac.walletoptimizer.model.Card;
@@ -56,8 +58,11 @@ public class CardService {
 
 
 
-    public Card addReward(Long cardId,RewardRule rewardRule){
+    public Card addReward(Long cardId, RewardRuleRequest request){
         Card card=getCardById(cardId);
+        RewardRule rewardRule=new RewardRule();
+        rewardRule.setCategory(request.category());
+        rewardRule.setCashbackPercent(request.cashbackPercent());
         card.addRewardRule(rewardRule);
         return cardRepository.save(card);
     }
@@ -77,21 +82,21 @@ public class CardService {
         card.getRewardRules().remove(rewardRule);
         cardRepository.save(card);
     }
-    public Card updateCard(Long cardId, Card updatedCard){
+    public Card updateCard(Long cardId, UpdateCardRequest updatedCardRequest){
         Card card=getCardById(cardId);
-        card.setName(updatedCard.getName());
-        card.setIssuer(updatedCard.getIssuer());
-        card.setNetwork(updatedCard.getNetwork());
-        card.setAnnualFee(updatedCard.getAnnualFee());
-        card.setActive(updatedCard.getActive());
+        card.setName(updatedCardRequest.name());
+        card.setIssuer(updatedCardRequest.issuer());
+        card.setNetwork(updatedCardRequest.network());
+        card.setAnnualFee(updatedCardRequest.annualFee());
+        card.setActive(updatedCardRequest.active());
         return cardRepository.save(card);
     }
 
-    public RewardRule updateReward(Long cardId, Long rewardId, RewardRule updatedRule){
+    public RewardRule updateReward(Long cardId, Long rewardId, RewardRuleRequest updatedRuleRequest){
         Card card= getCardById(cardId);
         RewardRule rewardRule=getRewardRuleById(card,rewardId);
-        rewardRule.setCategory(updatedRule.getCategory());
-        rewardRule.setCashbackPercent(updatedRule.getCashbackPercent());
+        rewardRule.setCategory(updatedRuleRequest.category());
+        rewardRule.setCashbackPercent(updatedRuleRequest.cashbackPercent());
         cardRepository.save(card);
         return rewardRule;
     }

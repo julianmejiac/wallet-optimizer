@@ -43,6 +43,7 @@ public class Card {
         rewardRules.add(rewardRule);
         rewardRule.setCard(this);
     }
+
     public Long getId() {
         return id;
     }
@@ -71,7 +72,7 @@ public class Card {
         this.network = network;
     }
 
-    public Boolean getActive() {
+    public Boolean isActive() {
         return active;
     }
 

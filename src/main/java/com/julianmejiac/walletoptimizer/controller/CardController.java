@@ -2,6 +2,8 @@ package com.julianmejiac.walletoptimizer.controller;
 
 import com.julianmejiac.walletoptimizer.dto.CardRecommendationDTO;
 import com.julianmejiac.walletoptimizer.dto.CreateCardRequest;
+import com.julianmejiac.walletoptimizer.dto.RewardRuleRequest;
+import com.julianmejiac.walletoptimizer.dto.UpdateCardRequest;
 import com.julianmejiac.walletoptimizer.model.Card;
 import com.julianmejiac.walletoptimizer.model.RewardRule;
 import com.julianmejiac.walletoptimizer.service.CardService;
@@ -46,17 +48,17 @@ public class CardController {
         return cardService.addCard(cardRequest);
     }
     @PostMapping("/cards/{cardId}/reward-rules")
-    public Card addReward(@PathVariable Long cardId,@Valid @RequestBody RewardRule rewardRule){
-        return cardService.addReward(cardId,rewardRule);
+    public Card addReward(@PathVariable Long cardId,@Valid @RequestBody RewardRuleRequest rewardRuleRequest){
+        return cardService.addReward(cardId,rewardRuleRequest);
 
     }
     @PutMapping("/cards/{cardId}")
-    public Card updateCard(@PathVariable Long cardId, @Valid @RequestBody Card updatedCard){
-        return cardService.updateCard(cardId, updatedCard);
+    public Card updateCard(@PathVariable Long cardId, @Valid @RequestBody UpdateCardRequest updatedCardRequest){
+        return cardService.updateCard(cardId, updatedCardRequest);
     }
     @PutMapping("/cards/{cardId}/reward-rules/{rewardId}")
-    public RewardRule updateReward(@PathVariable Long cardId, @PathVariable Long rewardId, @Valid @RequestBody RewardRule updatedRule){
-        return cardService.updateReward(cardId,rewardId, updatedRule);
+    public RewardRule updateReward(@PathVariable Long cardId, @PathVariable Long rewardId, @Valid @RequestBody RewardRuleRequest updatedRuleRequest){
+        return cardService.updateReward(cardId,rewardId, updatedRuleRequest);
     }
     @DeleteMapping("/cards/{cardId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

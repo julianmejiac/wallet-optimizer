@@ -95,7 +95,8 @@ public class CardServiceTest {
         //Act
         List<CardRecommendationDTO> results=cardService.recommendCard("gas");
         //Assert
-        assertEquals(List.of(card1),results);
+        CardRecommendationDTO expected=new CardRecommendationDTO("Costco",5.0);
+        assertEquals(List.of(expected),results);
 
     }
     @Test
@@ -106,7 +107,9 @@ public class CardServiceTest {
         //Act
         List<CardRecommendationDTO> results=cardService.recommendCard("Restaurant");
         //Assert
-        assertEquals(List.of(card2,card3),results);
+        CardRecommendationDTO expected1=new CardRecommendationDTO("Freedom Flex",3.0);
+        CardRecommendationDTO expected2=new CardRecommendationDTO("Freedom flex",3.0);
+        assertEquals(List.of(expected1,expected2),results);
 
     }
     @Test
