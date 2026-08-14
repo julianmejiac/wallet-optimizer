@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet Optimizer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Wallet Optimizer</h1>
+
+    <section>
+        <h2>Your Cards</h2>
+
+        <button id="loadCardsButton">Load Cards</button>
+
+        <div id="cardsContainer"></div>
+    </section>
+
+    <section>
+        <h2>Add Card</h2>
+
+        <form id="addCardForm">
+
+            <input
+                    type="text"
+                    id="name"
+                    placeholder="Card name"
+                    required>
+
+            <input
+                    type="text"
+                    id="issuer"
+                    placeholder="Issuer"
+                    required>
+
+            <input
+                    type="text"
+                    id="network"
+                    placeholder="Network"
+                    required>
+
+            <input
+                    type="number"
+                    id="annualFee"
+                    placeholder="Annual fee"
+                    min="0"
+                    step="0.01"
+                    required>
+
+            <button type="submit">
+                Add Card
+            </button>
+
+        </form>
+    </section>
+
+    <section>
+        <h2>Card Recommendation</h2>
+
+        <form id="recommendationForm">
+
+            <input
+                    type="text"
+                    id="category"
+                    placeholder="Category, e.g. Gas"
+                    required>
+
+            <button type="submit">
+                Recommend
+            </button>
+
+        </form>
+
+        <div id="recommendationContainer"></div>
+    </section>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
