@@ -63,3 +63,7 @@ button {
 .reward {
     padding: 5px 0;
 }
+.cardButtons {
+    display: flex;
+    gap: 10px;
+}

@@ -35,9 +35,19 @@ async function loadCards() {
             <p>Network: ${card.network}</p>
             <p>Annual Fee: $${card.annualFee}</p>
 
-            <button class="toggleRewardsButton">
-                View Rewards
-            </button>
+            <div class="cardButtons">
+                <button class="toggleRewardsButton">
+                    View Rewards
+                </button>
+
+                <button class="editCardButton">
+                    Edit
+                </button>
+
+                <button class="deleteCardButton">
+                    Delete
+                </button>
+            </div>
 
             <div class="rewardSection hidden">
                 <div class="rewardList"></div>
@@ -73,6 +83,11 @@ async function loadCards() {
         const toggleButton =
             cardDiv.querySelector(".toggleRewardsButton");
 
+        const editCardButton =
+            cardDiv.querySelector(".editCardButton");
+
+        const deleteCardButton =
+            cardDiv.querySelector(".deleteCardButton");
         const rewardSection =
             cardDiv.querySelector(".rewardSection");
 
@@ -89,11 +104,139 @@ async function loadCards() {
                 await loadRewardRules(card.id, rewardList);
             }
         });
+        // What happens when click on the editCardButton
+        editCardButton.addEventListener("click", ()=> handleEditCard (card, cardDiv))
+
+        // What happens when click on the deleteCardButton
+
+        deleteCardButton.addEventListener("click", ()=> handleDeleteCard(card,cardDiv))
+
         // What happens when submitting the rewardForm
         rewardForm.addEventListener("submit", (event)=> handleAddReward(event,card,rewardList,rewardForm));
     }
 }
 
+
+//handleDeleteCard
+async function handleDeleteCard(card) {
+
+
+        const response= await fetch(
+        `${API_URL}/cards/${card.id}`,
+        {method: "DELETE",
+                }
+      );
+
+        if (response.ok){
+        await loadCards();
+        }
+        else{
+        alert("Delete was unsuccessful");
+        }
+
+
+
+
+}
+
+//handleEditCard
+function handleEditCard(card, cardDiv) {
+
+    const existingEditSection =
+        cardDiv.querySelector(".editSection");
+
+    if (existingEditSection) {
+        existingEditSection.remove();
+        return;
+    }
+const editSection= document.createElement("div")
+editSection.classList.add("editSection")
+editSection.innerHTML=`
+            <form class="cardEditForm">
+            <input
+                    type="text"
+                    class="editName"
+                    value="${card.name}"
+                    required
+                >
+            <input
+                        type="text"
+                        class="editIssuer"
+                        value="${card.issuer}"
+                        required
+                            >
+            <input
+                        type="text"
+                        class="editNetwork"
+                        value="${card.network}"
+                        required
+                            >
+            <input
+                        type="number"
+                        class="editAnnualFee"
+                        value="${card.annualFee}"
+                        min="0"
+                        step="0.01"
+                        required
+                            >
+            <label>
+                Active
+                <input
+                    type="checkbox"
+                    class="editActive"
+                    ${card.active ? "checked":""}
+                >
+            </label>
+            <button type="submit" class="saveCardButton" >
+            Save Changes
+            </button>
+            </form>` ;
+
+ const editForm =editSection.querySelector(".cardEditForm");
+
+ editForm.addEventListener(
+                "submit",
+                (event) => saveCardChanges(event, card)
+            );
+
+            cardDiv.appendChild(editSection);
+}
+// Saving Changes of an edited Card
+async function saveCardChanges(event, card){
+event.preventDefault();
+//read inputs
+const editForm=event.currentTarget
+const name=editForm.querySelector(".editName").value;
+const issuer=editForm.querySelector(".editIssuer").value;
+const network=editForm.querySelector(".editNetwork").value;
+const annualFee=Number(editForm.querySelector(".editAnnualFee").value);
+const active = editForm.querySelector(".editActive").checked;
+
+const cardUpdateRequest = {
+    name: name,
+    issuer: issuer,
+    network: network,
+    annualFee: annualFee,
+    active: active
+};
+//put requests
+const response = await fetch(
+    `${API_URL}/cards/${card.id}`,
+    {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(cardUpdateRequest)
+    }
+);
+
+if(response.ok){
+await loadCards();}
+else{ console.log("Could not update card");}
+
+
+}
 
 //loadRewardRules function
 async function loadRewardRules(cardId, rewardList) {
@@ -125,7 +268,17 @@ async function loadRewardRules(cardId, rewardList) {
                 ${reward.category}:
                 ${reward.cashbackPercent}%
             </p>
+            <button class="editRewardButton">
+                    Edit
+                </button>
         `;
+        const editRewardButton =
+            rewardDiv.querySelector(".editRewardButton");
+
+        editRewardButton.addEventListener(
+            "click",
+            () => showEditRewardForm( cardId, reward, rewardDiv, rewardList)
+        );
 
         rewardList.appendChild(rewardDiv);
     }
@@ -279,3 +432,111 @@ async function handleAddReward (event, card, rewardList, rewardForm)
                 alert("Could not add reward rule.");
             }
         }
+
+//showEditRewardForm
+function showEditRewardForm(
+    cardId,
+    reward,
+    rewardDiv,
+    rewardList
+) {
+    const existingEditSection =
+        rewardDiv.querySelector(".editRewardSection");
+
+    if (existingEditSection) {
+        existingEditSection.remove();
+        return;
+    }
+
+    const editSection =
+        document.createElement("div");
+
+    editSection.classList.add("editRewardSection");
+
+    editSection.innerHTML = `
+        <form class="editRewardForm">
+
+            <input
+                type="text"
+                class="editRewardCategory"
+                value="${reward.category}"
+                required
+            >
+
+            <input
+                type="number"
+                class="editRewardCashback"
+                value="${reward.cashbackPercent}"
+                min="0.01"
+                step="0.01"
+                required
+            >
+
+            <button type="submit">
+                Save Changes
+            </button>
+
+        </form>
+    `;
+
+    const editForm =
+        editSection.querySelector(".editRewardForm");
+
+    editForm.addEventListener(
+        "submit",
+        (event) =>
+            saveRewardChanges(
+                event,
+                cardId,
+                reward,
+                rewardList
+            )
+    );
+
+    rewardDiv.appendChild(editSection);
+}
+//SaveRewardChanges
+async function saveRewardChanges(
+    event,
+    cardId,
+    reward,
+    rewardList
+) {
+    event.preventDefault();
+
+    const editForm = event.currentTarget;
+
+    const category =
+        editForm.querySelector(
+            ".editRewardCategory"
+        ).value;
+
+    const cashbackPercent =
+        Number(
+            editForm.querySelector(
+                ".editRewardCashback"
+            ).value
+        );
+
+    const rewardRequest = {
+        category,
+        cashbackPercent
+    };
+
+    const response = await fetch(
+        `${API_URL}/cards/${cardId}/reward-rules/${reward.id}`,
+        {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(rewardRequest)
+        }
+    );
+
+    if (response.ok) {
+        await loadRewardRules(cardId, rewardList);
+    } else {
+        console.log("Could not update reward rule");
+    }
+}
