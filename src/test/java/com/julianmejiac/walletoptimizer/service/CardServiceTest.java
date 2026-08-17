@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -77,12 +78,12 @@ public class CardServiceTest {
         card1=new Card("Costco","Citi", "Visa",0.0);
         card2=new Card("Freedom Flex", "Chase","Mastercard",0.0);
         card3=new Card("Freedom flex","Chase","Mastercard",5.0);
-        RewardRule rewardRule11= new RewardRule("Gas",5.0);
-        RewardRule rewardRule12= new RewardRule("Grocery",2.0);
-        RewardRule rewardRule21= new RewardRule("Restaurant",3.0);
-        RewardRule rewardRule22= new RewardRule("Gas",3.0);
-        RewardRule rewardRule31= new RewardRule("Restaurant",3.0);
-        RewardRule rewardRule32= new RewardRule("Gas",4.0);
+        RewardRule rewardRule11= new RewardRule("Gas", BigDecimal.valueOf(5.0));
+        RewardRule rewardRule12= new RewardRule("Grocery",BigDecimal.valueOf(2.0));
+        RewardRule rewardRule21= new RewardRule("Restaurant",BigDecimal.valueOf(3.0));
+        RewardRule rewardRule22= new RewardRule("Gas",BigDecimal.valueOf(3.0));
+        RewardRule rewardRule31= new RewardRule("Restaurant",BigDecimal.valueOf(3.0));
+        RewardRule rewardRule32= new RewardRule("Gas",BigDecimal.valueOf(4.0));
         card1.setRewardRules(List.of(rewardRule11,rewardRule12));
         card2.setRewardRules(List.of(rewardRule21,rewardRule22));
         card3.setRewardRules(List.of(rewardRule31,rewardRule32));
@@ -95,7 +96,7 @@ public class CardServiceTest {
         //Act
         List<CardRecommendationDTO> results=cardService.recommendCard("gas");
         //Assert
-        CardRecommendationDTO expected=new CardRecommendationDTO("Costco",5.0);
+        CardRecommendationDTO expected=new CardRecommendationDTO("Costco",BigDecimal.valueOf(5.0));
         assertEquals(List.of(expected),results);
 
     }
@@ -107,8 +108,8 @@ public class CardServiceTest {
         //Act
         List<CardRecommendationDTO> results=cardService.recommendCard("Restaurant");
         //Assert
-        CardRecommendationDTO expected1=new CardRecommendationDTO("Freedom Flex",3.0);
-        CardRecommendationDTO expected2=new CardRecommendationDTO("Freedom flex",3.0);
+        CardRecommendationDTO expected1=new CardRecommendationDTO("Freedom Flex",BigDecimal.valueOf(3.0));
+        CardRecommendationDTO expected2=new CardRecommendationDTO("Freedom flex",BigDecimal.valueOf(3.0));
         assertEquals(List.of(expected1,expected2),results);
 
     }

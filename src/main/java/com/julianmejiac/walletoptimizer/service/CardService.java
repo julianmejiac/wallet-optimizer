@@ -12,6 +12,7 @@ import com.julianmejiac.walletoptimizer.model.RewardRule;
 import com.julianmejiac.walletoptimizer.repository.CardRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -107,19 +108,19 @@ public class CardService {
 
     public List<CardRecommendationDTO> recommendCard(String category) {
         List<CardRecommendationDTO> bestCards = new ArrayList<>();
-        double bestReward = 0.0;
+        BigDecimal bestReward = BigDecimal.ZERO;
         for (Card card: cardRepository.findAll()) {
             if (!card.isActive()){
                 continue;
             }
 
             for (RewardRule rewardRule : card.getRewardRules()) {
-                double cashback = rewardRule.getCashbackPercent();
+                BigDecimal cashback = rewardRule.getCashbackPercent();
                 if (rewardRule.getCategory().equalsIgnoreCase(category)) {
-                    if (bestReward == cashback) {
+                    if (bestReward.equals(cashback) ) {
                         CardRecommendationDTO cardDTO = new CardRecommendationDTO(card.getName(), cashback);
                         bestCards.add(cardDTO);
-                    } else if (bestReward < cashback) {
+                    } else if (bestReward.compareTo(cashback)<0) {
                         bestCards.clear();
                         CardRecommendationDTO cardDTO = new CardRecommendationDTO(card.getName(), cashback);
                         bestCards.add(cardDTO);
