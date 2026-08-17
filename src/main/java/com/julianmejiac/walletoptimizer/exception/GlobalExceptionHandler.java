@@ -1,6 +1,7 @@
 package com.julianmejiac.walletoptimizer.exception;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,5 +29,16 @@ public class GlobalExceptionHandler {
         error.put("error",exception.getMessage());
         return error;
 
+    }
+
+    @ExceptionHandler(DuplicateCardException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleDuplicateCard(
+            DuplicateCardException exception) {
+
+        Map<String, String> error = new HashMap<>();
+        error.put("error", exception.getMessage());
+
+        return error;
     }
 }

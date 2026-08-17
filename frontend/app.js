@@ -337,7 +337,8 @@ async function handleAddCard(event)
 
         } else {
 
-            alert("Could not add card.");
+            const errorBody = await response.json();
+                alert(errorBody.error);
         }
     }
 

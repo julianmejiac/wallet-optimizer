@@ -5,6 +5,7 @@ import com.julianmejiac.walletoptimizer.dto.CreateCardRequest;
 import com.julianmejiac.walletoptimizer.dto.RewardRuleRequest;
 import com.julianmejiac.walletoptimizer.dto.UpdateCardRequest;
 import com.julianmejiac.walletoptimizer.exception.CardNotFoundException;
+import com.julianmejiac.walletoptimizer.exception.DuplicateCardException;
 import com.julianmejiac.walletoptimizer.exception.RewardRuleNotFoundException;
 import com.julianmejiac.walletoptimizer.model.Card;
 import com.julianmejiac.walletoptimizer.model.RewardRule;
@@ -36,6 +37,9 @@ public class CardService {
         return matchingCards;
     }
     public Card  addCard(CreateCardRequest cardRequest){
+        if (cardRepository.existsByNameIgnoreCaseAndIssuerIgnoreCase(cardRequest.name(), cardRequest.issuer()))
+        {throw new DuplicateCardException("Card already exists");
+        };
         Card card=new Card(cardRequest.name(),  cardRequest.issuer(), cardRequest.network(), cardRequest.annualFee());
         return cardRepository.save(card);
     }
@@ -105,15 +109,19 @@ public class CardService {
         List<CardRecommendationDTO> bestCards = new ArrayList<>();
         double bestReward = 0.0;
         for (Card card: cardRepository.findAll()) {
+            if (!card.isActive()){
+                continue;
+            }
+
             for (RewardRule rewardRule : card.getRewardRules()) {
                 double cashback = rewardRule.getCashbackPercent();
                 if (rewardRule.getCategory().equalsIgnoreCase(category)) {
                     if (bestReward == cashback) {
-                        CardRecommendationDTO cardDTO = new CardRecommendationDTO(card.getName(),cashback);
-                                bestCards.add(cardDTO);
+                        CardRecommendationDTO cardDTO = new CardRecommendationDTO(card.getName(), cashback);
+                        bestCards.add(cardDTO);
                     } else if (bestReward < cashback) {
                         bestCards.clear();
-                        CardRecommendationDTO cardDTO = new CardRecommendationDTO(card.getName(),cashback);
+                        CardRecommendationDTO cardDTO = new CardRecommendationDTO(card.getName(), cashback);
                         bestCards.add(cardDTO);
                         bestReward = cashback;
                     }
@@ -122,6 +130,8 @@ public class CardService {
                 }
 
             }
+
+
 
         }
 
