@@ -3,8 +3,10 @@ package com.julianmejiac.walletoptimizer.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +23,8 @@ public class Card {
     private String network;
     @PositiveOrZero
     private double annualFee;
+    @Positive
+    private BigDecimal defaultCashbackPercent;
     private Boolean active;
     @OneToMany(mappedBy = "card", cascade = CascadeType.ALL,orphanRemoval = true)
     @JsonManagedReference
@@ -30,12 +34,13 @@ public class Card {
         this.rewardRules=new ArrayList<>();
     }
 
-    public Card(String name, String issuer, String network, double annualFee) {
+    public Card(String name, String issuer, String network, double annualFee, BigDecimal defaultCashbackPercent) {
         this();
         this.name = name;
         this.issuer = issuer;
         this.network = network;
         this.annualFee = annualFee;
+        this.defaultCashbackPercent=defaultCashbackPercent;
                     }
 
     public void addRewardRule(RewardRule rewardRule){
@@ -94,6 +99,14 @@ public class Card {
 
     public void setRewardRules(List<RewardRule> rewardRules) {
         this.rewardRules = rewardRules;
+    }
+
+    public BigDecimal getDefaultCashbackPercent() {
+        return defaultCashbackPercent;
+    }
+
+    public void setDefaultCashbackPercent(BigDecimal defaultCashbackPercent) {
+        this.defaultCashbackPercent = defaultCashbackPercent;
     }
 
     @Override

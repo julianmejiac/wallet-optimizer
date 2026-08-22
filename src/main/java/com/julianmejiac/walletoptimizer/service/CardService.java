@@ -41,7 +41,7 @@ public class CardService {
         if (cardRepository.existsByNameIgnoreCaseAndIssuerIgnoreCase(cardRequest.name(), cardRequest.issuer()))
         {throw new DuplicateCardException("Card already exists");
         };
-        Card card=new Card(cardRequest.name(),  cardRequest.issuer(), cardRequest.network(), cardRequest.annualFee());
+        Card card=new Card(cardRequest.name(),  cardRequest.issuer(), cardRequest.network(), cardRequest.annualFee(), cardRequest.defaultCashbackPercent());
         return cardRepository.save(card);
     }
 
@@ -93,6 +93,7 @@ public class CardService {
         card.setIssuer(updatedCardRequest.issuer());
         card.setNetwork(updatedCardRequest.network());
         card.setAnnualFee(updatedCardRequest.annualFee());
+        card.setDefaultCashbackPercent(updatedCardRequest.defaultCashbackPercent());
         card.setActive(updatedCardRequest.active());
         return cardRepository.save(card);
     }
@@ -113,25 +114,23 @@ public class CardService {
             if (!card.isActive()){
                 continue;
             }
-
-            for (RewardRule rewardRule : card.getRewardRules()) {
-                BigDecimal cashback = rewardRule.getCashbackPercent();
-                if (rewardRule.getCategory().equalsIgnoreCase(category)) {
-                    if (bestReward.equals(cashback) ) {
-                        CardRecommendationDTO cardDTO = new CardRecommendationDTO(card.getName(), cashback);
-                        bestCards.add(cardDTO);
-                    } else if (bestReward.compareTo(cashback)<0) {
-                        bestCards.clear();
-                        CardRecommendationDTO cardDTO = new CardRecommendationDTO(card.getName(), cashback);
-                        bestCards.add(cardDTO);
-                        bestReward = cashback;
-                    }
-
-
+            BigDecimal cashback= card.getDefaultCashbackPercent();
+            for (RewardRule rewardRule : card.getRewardRules()){
+                if (rewardRule.getCategory().equalsIgnoreCase(category)){
+                    cashback=rewardRule.getCashbackPercent();
+                    break;
                 }
-
             }
 
+            if (bestReward.compareTo(cashback)==0 ) {
+                CardRecommendationDTO cardDTO = new CardRecommendationDTO(card.getName(), cashback);
+                bestCards.add(cardDTO);
+            } else if (bestReward.compareTo(cashback)<0) {
+                bestCards.clear();
+                CardRecommendationDTO cardDTO = new CardRecommendationDTO(card.getName(), cashback);
+                bestCards.add(cardDTO);
+                bestReward = cashback;
+            }
 
 
         }

@@ -87,4 +87,50 @@ public class BudgetControllerTest {
         verify(budgetService)
                 .calculateBudgetRecommendation(expectedRequest);
     }
+    @Test
+    void shouldReturnBadRequestWhenMonthlyAmountIsNull() throws Exception {
+
+        mockMvc.perform(post("/budget/recommendation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                              "expenses": [
+                                {
+                                  "category": "Gas",
+                                  "monthlyAmount": null
+                                }
+                              ]
+                            }
+                            """))
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    void shouldReturnBadRequestWhenCategoryIsEmpty() throws Exception {
+
+        mockMvc.perform(post("/budget/recommendation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                              "expenses": [
+                                {
+                                  "category": "",
+                                  "monthlyAmount": 200
+                                }
+                              ]
+                            }
+                            """))
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    void shouldReturnBadRequestWhenExpensesIsEmpty() throws Exception {
+
+        mockMvc.perform(post("/budget/recommendation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                              "expenses": [ ]
+                            }
+                            """))
+                .andExpect(status().isBadRequest());
+    }
 }

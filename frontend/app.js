@@ -34,6 +34,7 @@ async function loadCards() {
             <p>Issuer: ${card.issuer}</p>
             <p>Network: ${card.network}</p>
             <p>Annual Fee: $${card.annualFee}</p>
+            <p>Default Cashback Percent: ${card.defaultCashbackPercent}%</p>
 
             <div class="cardButtons">
                 <button class="toggleRewardsButton">
@@ -179,6 +180,13 @@ editSection.innerHTML=`
                         step="0.01"
                         required
                             >
+            <input type="number"
+                   class="editDefaultCashbackPercent"
+                   value="${card.defaultCashbackPercent}"
+                   min="0"
+                   step="0.01"
+                   required
+                        >
             <label>
                 Active
                 <input
@@ -210,6 +218,7 @@ const name=editForm.querySelector(".editName").value;
 const issuer=editForm.querySelector(".editIssuer").value;
 const network=editForm.querySelector(".editNetwork").value;
 const annualFee=Number(editForm.querySelector(".editAnnualFee").value);
+const defaultCashbackPercent=Number(editForm.querySelector(".editDefaultCashbackPercent").value)
 const active = editForm.querySelector(".editActive").checked;
 
 const cardUpdateRequest = {
@@ -217,6 +226,7 @@ const cardUpdateRequest = {
     issuer: issuer,
     network: network,
     annualFee: annualFee,
+    defaultCashbackPercent: defaultCashbackPercent,
     active: active
 };
 //put requests
@@ -314,6 +324,10 @@ async function handleAddCard(event)
             annualFee:
                 Number(
                     document.getElementById("annualFee").value
+                ),
+            defaultCashbackPercent:
+                Number(
+                    document.getElementById("defaultCashbackPercent").value
                 )
         };
 

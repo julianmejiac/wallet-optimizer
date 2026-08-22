@@ -33,8 +33,8 @@ public class CardServiceTest {
     @Test
     void getAllCardsTest(){
         //Arrange
-        Card costco=new Card("Costco","Citi", "Visa",0.0);
-        Card freedom=new Card("Freedom Flex", "Chase","Mastercard",0.0);
+        Card costco=new Card("Costco","Citi", "Visa",0.0,BigDecimal.valueOf(1.5));
+        Card freedom=new Card("Freedom Flex", "Chase","Mastercard",0.0,BigDecimal.valueOf(1.5));
         when(cardRepository.findAll()).thenReturn(List.of(costco,freedom));
         //Act
         List<Card> result=cardService.getAllCards();
@@ -46,9 +46,9 @@ public class CardServiceTest {
     @Test
     void getCardsByNameTest(){
         //Arrange
-        Card costco=new Card("Costco","Citi", "Visa",0.0);
-        Card freedom=new Card("Freedom Flex", "Chase","Mastercard",0.0);
-        Card freedom2=new Card("Freedom flex","Chase","Mastercard",5.0);
+        Card costco=new Card("Costco","Citi", "Visa",0.0,BigDecimal.valueOf(1.5));
+        Card freedom=new Card("Freedom Flex", "Chase","Mastercard",0.0,BigDecimal.valueOf(1.5));
+        Card freedom2=new Card("Freedom flex","Chase","Mastercard",5.0,BigDecimal.valueOf(1.5));
         when (cardRepository.findAll()).thenReturn(List.of(costco,freedom,freedom2));
         //Act
         List<Card> result=cardService.getCardsByName("freedom flex");
@@ -59,7 +59,7 @@ public class CardServiceTest {
     @Test
     void getCardByIdReturnsExistingCard(){
         //Arrange
-        Card costco= new Card("Costco","Citi", "Visa",0.0);
+        Card costco= new Card("Costco","Citi", "Visa",0.0,BigDecimal.valueOf(1.5));
         when(cardRepository.findById(1L)).thenReturn(Optional.of(costco));
         //Act
         Card result=cardService.getCardById(1L);
@@ -75,9 +75,9 @@ public class CardServiceTest {
         assertThrows(CardNotFoundException.class,()-> cardService.getCardById(99L));
     }
     private void setupReccommendCards(){
-        card1=new Card("Costco","Citi", "Visa",0.0);
-        card2=new Card("Freedom Flex", "Chase","Mastercard",0.0);
-        card3=new Card("Freedom flex","Chase","Mastercard",5.0);
+        card1=new Card("Costco","Citi", "Visa",0.0,BigDecimal.valueOf(1.5));
+        card2=new Card("Freedom Flex", "Chase","Mastercard",0.0,BigDecimal.valueOf(1.5));
+        card3=new Card("Freedom flex","Huntington","Mastercard",5.0,BigDecimal.valueOf(1.0));
         RewardRule rewardRule11= new RewardRule("Gas", BigDecimal.valueOf(5.0));
         RewardRule rewardRule12= new RewardRule("Grocery",BigDecimal.valueOf(2.0));
         RewardRule rewardRule21= new RewardRule("Restaurant",BigDecimal.valueOf(3.0));
@@ -114,14 +114,16 @@ public class CardServiceTest {
 
     }
     @Test
-    void recommendCardNull(){
+    void shouldReturnCardWithBestDefaultCashbackWhenCategoryIsUnknown(){
         //Arrange
         setupReccommendCards();
         when(cardRepository.findAll()).thenReturn(List.of(card1,card2,card3));
         //Act
         List<CardRecommendationDTO> results=cardService.recommendCard("Transit");
-        //Assert
-        assertTrue(results.isEmpty() );
+        //Assert (This time result is not empty since we have default cashback)
+        CardRecommendationDTO expected1=new CardRecommendationDTO("Costco",BigDecimal.valueOf(1.5));
+        CardRecommendationDTO expected2=new CardRecommendationDTO("Freedom Flex",BigDecimal.valueOf(1.5));
+        assertEquals(List.of(expected1,expected2),results);
 
     }
 }

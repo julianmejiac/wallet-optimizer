@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,7 +19,7 @@ public class CardRepositoryTest {
     @Test
     void SaveAndFindCardTest(){
         //Arrange
-        Card card=new Card("Costco","Citi","Visa",0.0);
+        Card card=new Card("Costco","Citi","Visa",0.0, BigDecimal.valueOf(1.5));
         // Act
         Card savedCard = cardRepository.save(card);
 
@@ -31,6 +32,7 @@ public class CardRepositoryTest {
         assertEquals("Citi", result.get().getIssuer());
         assertEquals("Visa", result.get().getNetwork());
         assertEquals(0.0, result.get().getAnnualFee());
+        assertEquals(BigDecimal.valueOf(1.5),result.get().getDefaultCashbackPercent());
         assertTrue(result.get().isActive());
     }
 
