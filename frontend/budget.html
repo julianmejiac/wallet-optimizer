@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> Wallet Optimizer - Budgeting Tool</title> <!--This is the title -->
+
+</head>
+<body>
+    <h1> Budgeting Tool</h1> <!--This is a BLOCK ELEMENT, the page title-->
+    <!-- Budget input-->
+    <label for="category"> Category:</label>
+    <input type="text" id="category">
+
+    <label for="monthlyAmount">  Monthly Amount:</label>
+    <input type="number" id="monthlyAmount" step="0.01">
+
+    <button type="button" id="addExpenseButton"> Add Expense</button>
+    <!--Table of expenses-->
+    <h2>Monthly Expenses</h2>
+    <table>
+        <thead>
+            <tr><!--table row-->
+                <th>Category</th> <!--table header cell-->
+                <th>Monthly Amount</th>
+                <th> Action</th>
+            </tr>
+        </thead>
+        <tbody id="expenseTableBody">
+
+        </tbody>
+    </table>
+    <button type="button" id="recommendButton">
+        Get Recommendations
+    </button>
+    <!--Recommendation table will eventually appear here-->
+    <div id="recommendationResults">
+
+    </div>
+    <script src="budget.js"></script>
+</body>
+
+
+
+
+</html>
