@@ -18,8 +18,6 @@ import java.util.List;
     public BudgetTotalResponse calculateBudgetRecommendation(
             BudgetRequest budgetRequest) {
 
-
-
         List<BudgetRecommendation> recommendations =new ArrayList<>();
         BigDecimal totalMonthlyExpenses= BigDecimal.ZERO;
         BigDecimal totalMonthlyRewards= BigDecimal.ZERO;
@@ -27,16 +25,18 @@ import java.util.List;
         for (BudgetItem budgetItem:budgetRequest.expenses()){
             String category=budgetItem.category();
             BigDecimal monthlyAmount=budgetItem.monthlyAmount();
+            //optimal cards are a list of cardRecommendation DTO
             List<CardRecommendationDTO> optimalCards=cardService.recommendCard(category);
             if (optimalCards.isEmpty()) {
                 throw new CardNotFoundException("Category "+ category+ " does not have a card");
             }
-
+            //here I create a String list of cardNames with the optimal cashback, this is needed for BudgetRecommendationrecord
             List<String> cardNames=new ArrayList<>();
 
             for(CardRecommendationDTO card:optimalCards){
                 cardNames.add(card.cardName());
                             }
+
             BigDecimal cashbackPercent=optimalCards.get(0).cashbackPercent();
             BigDecimal monthlyReward=(monthlyAmount.multiply(cashbackPercent)).divide(BigDecimal.valueOf(100));
 
