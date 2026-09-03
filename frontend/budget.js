@@ -14,12 +14,28 @@ addExpenseButton.addEventListener("click", addExpense);
 recommendButton.addEventListener("click", getRecommendation);
 
 function addExpense() {
-    const categoryName = categoryInput.value;
+    const categoryName = categoryInput.value.trim();
+
+    if (categoryName === ""){
+        alert("Please enter a category");
+        return;
+                }
     const categoryAmount = monthlyAmountInput.value;
+    if (categoryAmount === ""){
+        alert("Please enter a monthly amount.");
+        return;
+    }
+    if (Number(categoryAmount)<=0){
+        alert("Monthly amount must be positive");
+        return;
+    }
 
     const row = createExpenseRow(categoryName, categoryAmount);
 
     expenseTableBody.appendChild(row);
+    categoryInput.value = "";
+    monthlyAmountInput.value = "";
+    categoryInput.focus();
 }
 
 function createExpenseRow(categoryName, categoryAmount) {
@@ -30,7 +46,7 @@ function createExpenseRow(categoryName, categoryAmount) {
     const removeCell = document.createElement("td");
 
     categoryCell.textContent = categoryName;
-    amountCell.textContent = categoryAmount;
+    amountCell.textContent = Number(categoryAmount).toFixed(2);
 
     const removeButton = document.createElement("button");
     removeButton.textContent = "Remove";
@@ -51,6 +67,10 @@ function createExpenseRow(categoryName, categoryAmount) {
 async function getRecommendation(){
     const expenses=[];
     const rows=expenseTableBody.querySelectorAll("tr");
+    if (rows.length === 0){
+        alert("please add at least one expense");
+        return;
+        }
     for (const row of rows){
         const category=row.children[0].textContent;
         const monthlyAmount=Number(row.children[1].textContent);
@@ -59,13 +79,26 @@ async function getRecommendation(){
         expenses.push(budgetItem)
     }
     const budgetRequest={expenses:expenses};
-    console.log(budgetRequest);
-    const response= await fetch(`${API_URL}/budget/recommendation`,
+    console.log("Budget request: ",budgetRequest);
+    let response;
+    try{
+    response= await fetch(`${API_URL}/budget/recommendation`,
     {method: "POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify(budgetRequest)})
+    }
+    catch(error){
+    alert("Could not connect to the server");
+    return;
+    }
+
+    if (!response.ok){
+        alert("Unable to calculate recommendations")
+        return
+    }
     const result=await response.json();
-    console.log(result);
+    console.log("Budget response: ",result);
+    recommendationTableBody.innerHTML = "";
     for (const recommendation of result.recommendations){
     const row=document.createElement("tr");
     const categoryResultCell=document.createElement("td");
@@ -74,10 +107,10 @@ async function getRecommendation(){
     const cashbackPercentResultCell=document.createElement("td");
     const monthlyRewardResultCell=document.createElement("td");
     categoryResultCell.textContent=recommendation.category;
-    monthlyAmountResultCell.textContent=recommendation.monthlyAmount;
+    monthlyAmountResultCell.textContent=`$${recommendation.monthlyAmount.toFixed(2)}`;
     cardNamesResultCell.textContent=recommendation.cardNames.join(", ");
-    cashbackPercentResultCell.textContent=recommendation.cashbackPercent;
-    monthlyRewardResultCell.textContent=recommendation.monthlyReward;
+    cashbackPercentResultCell.textContent=`${recommendation.cashbackPercent}%`;
+    monthlyRewardResultCell.textContent=`$${recommendation.monthlyReward.toFixed(2)}`;
     row.appendChild(categoryResultCell);
     row.appendChild(monthlyAmountResultCell);
     row.appendChild(cardNamesResultCell);
@@ -86,7 +119,8 @@ async function getRecommendation(){
     recommendationTableBody.appendChild(row);
     }
 
-    totalAnnualRewards.textContent=`Total annual rewards: $${result.totalAnnualRewards}`;
-    totalMonthlyExpenses.textContent=`Total monthly expenses: $${result.totalMonthlyExpenses}`;
-    totalMonthlyRewards.textContent=`Total monthly rewards: $${result.totalMonthlyRewards}`;
+    totalAnnualRewards.textContent=`Total annual rewards: $${result.totalAnnualRewards.toFixed(2)}`;
+    totalMonthlyExpenses.textContent=`Total monthly expenses: $${result.totalMonthlyExpenses.toFixed(2)}`;
+    totalMonthlyRewards.textContent=`Total monthly rewards: $${result.totalMonthlyRewards.toFixed(2)}`;
+
 }
