@@ -97,7 +97,7 @@ async function loadCards() {
 
         const rewardForm =
             cardDiv.querySelector(".rewardForm");
-        // What happens when click on the RewardsButton
+        // What happens when click on the toggleRewardsButton (View Rewards)
         toggleButton.addEventListener("click", async function () {
             rewardSection.classList.toggle("hidden");
 
@@ -281,6 +281,10 @@ async function loadRewardRules(cardId, rewardList) {
             <button class="editRewardButton">
                     Edit
                 </button>
+             <button class="deleteRewardButton">
+                    Delete
+             </button>
+
         `;
         const editRewardButton =
             rewardDiv.querySelector(".editRewardButton");
@@ -289,7 +293,13 @@ async function loadRewardRules(cardId, rewardList) {
             "click",
             () => showEditRewardForm( cardId, reward, rewardDiv, rewardList)
         );
-
+        const deleteRewardButton =rewardDiv.querySelector(".deleteRewardButton");
+        deleteRewardButton.addEventListener("click",async ()=>{
+        const deleted= await deleteReward(cardId,reward.id);
+        if(deleted){
+        rewardDiv.remove();
+        }
+        })
         rewardList.appendChild(rewardDiv);
     }
 }
@@ -554,4 +564,12 @@ async function saveRewardChanges(
     } else {
         console.log("Could not update reward rule");
     }
+}
+async function deleteReward(cardId, rewardId){
+const response= await fetch(
+`${API_URL}/cards/${cardId}/reward-rules/${rewardId}`,
+{ method: "DELETE"
+}
+);
+return response.ok
 }

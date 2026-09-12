@@ -19,7 +19,7 @@ public class CardRepositoryTest {
     @Test
     void SaveAndFindCardTest(){
         //Arrange
-        Card card=new Card("Costco","Citi","Visa",0.0, BigDecimal.valueOf(1.5));
+        Card card=new Card("Costco","Citi","Visa",BigDecimal.valueOf(0.0), BigDecimal.valueOf(1.5));
         // Act
         Card savedCard = cardRepository.save(card);
 
@@ -31,7 +31,7 @@ public class CardRepositoryTest {
         assertEquals("Costco", result.get().getName());
         assertEquals("Citi", result.get().getIssuer());
         assertEquals("Visa", result.get().getNetwork());
-        assertEquals(0.0, result.get().getAnnualFee());
+        assertEquals(BigDecimal.valueOf(0.0), result.get().getAnnualFee());
         assertEquals(BigDecimal.valueOf(1.5),result.get().getDefaultCashbackPercent());
         assertTrue(result.get().isActive());
     }

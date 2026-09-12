@@ -22,7 +22,8 @@ public class Card {
     @NotBlank
     private String network;
     @PositiveOrZero
-    private double annualFee;
+    @Column(precision =10, scale = 2)
+    private BigDecimal annualFee;
     @Positive
     private BigDecimal defaultCashbackPercent;
     private Boolean active;
@@ -34,7 +35,7 @@ public class Card {
         this.rewardRules=new ArrayList<>();
     }
 
-    public Card(String name, String issuer, String network, double annualFee, BigDecimal defaultCashbackPercent) {
+    public Card(String name, String issuer, String network, BigDecimal annualFee, BigDecimal defaultCashbackPercent) {
         this();
         this.name = name;
         this.issuer = issuer;
@@ -85,11 +86,11 @@ public class Card {
         this.active = active;
     }
 
-    public double getAnnualFee() {
+    public BigDecimal getAnnualFee() {
         return annualFee;
     }
 
-    public void setAnnualFee(double annualFee) {
+    public void setAnnualFee(BigDecimal annualFee) {
         this.annualFee = annualFee;
     }
 

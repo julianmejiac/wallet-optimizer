@@ -10,7 +10,7 @@ public record CreateCardRequest(
         @NotBlank(message = "Card name is required") String name,
         @NotBlank(message = "Issuer is required") String issuer,
         @NotBlank(message="Network is required") String network,
-        @PositiveOrZero(message="Annual fee cannot be negative") double annualFee,
+        @PositiveOrZero(message = "Annual fee cannot be negative") BigDecimal annualFee,
         @Positive(message="Default Cashback has to be positive") BigDecimal defaultCashbackPercent
 ) {
 }
