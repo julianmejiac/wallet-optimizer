@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8080";
+
 const addExpenseButton = document.getElementById("addExpenseButton");
 const categoryInput = document.getElementById("category");
 const monthlyAmountInput = document.getElementById("monthlyAmount");
