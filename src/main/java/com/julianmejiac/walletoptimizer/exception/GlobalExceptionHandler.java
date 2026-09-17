@@ -30,6 +30,13 @@ public class GlobalExceptionHandler {
         return error;
 
     }
+    @ExceptionHandler(RewardRuleNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String,String> handleRewardRuleNotFound(RewardRuleNotFoundException exception){
+        Map<String,String> error=new HashMap<>();
+        error.put("error",exception.getMessage());
+        return error;
+    }
 
     @ExceptionHandler(DuplicateCardException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
@@ -41,4 +48,5 @@ public class GlobalExceptionHandler {
 
         return error;
     }
+
 }

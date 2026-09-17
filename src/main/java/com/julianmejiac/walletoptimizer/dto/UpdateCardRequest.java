@@ -1,9 +1,6 @@
 package com.julianmejiac.walletoptimizer.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 
@@ -13,6 +10,9 @@ public record UpdateCardRequest(
         @NotBlank String network,
         @NotNull(message = "Annual fee is required")
         @PositiveOrZero(message = "annual fee cannot be negative") BigDecimal annualFee,
-        @Positive BigDecimal defaultCashbackPercent,
+        @Positive
+        @DecimalMax(value = "100.0",
+                message = "Cashback percentage cannot exceed 100")
+        BigDecimal defaultCashbackPercent,
         boolean active
 ) {}
