@@ -1,7 +1,10 @@
 package com.julianmejiac.walletoptimizer.service;
 
 import com.julianmejiac.walletoptimizer.dto.CardRecommendationDTO;
+import com.julianmejiac.walletoptimizer.dto.CreateCardRequest;
+import com.julianmejiac.walletoptimizer.dto.UpdateCardRequest;
 import com.julianmejiac.walletoptimizer.exception.CardNotFoundException;
+import com.julianmejiac.walletoptimizer.exception.DuplicateCardException;
 import com.julianmejiac.walletoptimizer.exception.RewardRuleNotFoundException;
 import com.julianmejiac.walletoptimizer.model.Card;
 import com.julianmejiac.walletoptimizer.model.RewardRule;
@@ -11,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -18,8 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class CardServiceTest {
@@ -125,5 +128,133 @@ public class CardServiceTest {
         CardRecommendationDTO expected2=new CardRecommendationDTO("Freedom Flex",BigDecimal.valueOf(1.5));
         assertEquals(List.of(expected1,expected2),results);
 
+    }
+    @Test
+    void addCardThrowsDuplicateCardException() {
+        // Arrange
+        CreateCardRequest request = new CreateCardRequest(
+                "Costco",
+                "Citi",
+                "Visa",
+                BigDecimal.valueOf(0.0),
+                BigDecimal.valueOf(1.5)
+        );
+
+        //  Tell Mockito that a matching card already exists.
+        when(cardRepository.existsByNameIgnoreCaseAndIssuerIgnoreCase(request.name(), request.issuer())).thenReturn(true);
+
+        //  Assert that cardService.addCard(request)throws DuplicateCardException.
+        assertThrows(DuplicateCardException.class,()->cardService.addCard(request));
+
+
+        //  Verify that cardRepository.save() was never called.
+        verify(cardRepository,never()).save(any(Card.class));
+    }
+    @Test
+    void addCardSuccessfully() {
+        // Arrange
+        CreateCardRequest request = new CreateCardRequest(
+                "Costco",
+                "Citi",
+                "Visa",
+                BigDecimal.ZERO,
+                BigDecimal.valueOf(1.5)
+        );
+
+        when(cardRepository.existsByNameIgnoreCaseAndIssuerIgnoreCase(
+                request.name(), request.issuer()))
+                .thenReturn(false);
+
+        //  Create a separate Card to simulate the saved entity
+        Card savedCard = new Card(
+                "Costco",
+                "Citi",
+                "Visa",
+                BigDecimal.ZERO,
+                BigDecimal.valueOf(1.5)
+        );
+        when(cardRepository.save(any(Card.class)))
+                .thenReturn(savedCard);
+
+        // Act
+        Card result = cardService.addCard(request);
+
+        // Assert
+        assertSame(savedCard,result);
+        //Verify save() was called exactly once
+        verify(cardRepository, times(1)).save(any(Card.class));
+    }
+    @Test
+    void deleteCardSuccessfully() {
+        // Arrange
+        Card costco = new Card(
+                "Costco",
+                "Citi",
+                "Visa",
+                BigDecimal.ZERO,
+                BigDecimal.valueOf(1.5)
+        );
+
+        when(cardRepository.findById(1L))
+                .thenReturn(Optional.of(costco));
+
+        // Act
+        cardService.deleteCard(1L);
+
+        // Assert
+        verify(cardRepository).delete(costco);
+    }
+    @Test
+    void deleteCardThrowsWhenCardNotFound() {
+        // Arrange
+        when(cardRepository.findById(99L))
+                .thenReturn(Optional.empty());
+
+        // Act&Assert
+        assertThrows(CardNotFoundException.class,()->cardService.deleteCard(99L));
+        //Verify
+        verify(cardRepository,never()).delete(any(Card.class));
+
+    }
+    @Test
+    void updateCardSuccessfully() {
+        // Arrange
+        Card costco = new Card(
+                "Costco",
+                "Citi",
+                "Visa",
+                BigDecimal.ZERO,
+                BigDecimal.valueOf(1.5)
+        );
+
+        UpdateCardRequest request = new UpdateCardRequest(
+                "Costco Anywhere",
+                "Citi",
+                "Visa",
+                BigDecimal.valueOf(95),
+                BigDecimal.valueOf(2.0),
+                false
+        );
+
+        when(cardRepository.findById(1L))
+                .thenReturn(Optional.of(costco));
+
+        // TODO: Configure cardRepository.save().
+        when(cardRepository.save(any(Card.class))).thenAnswer(invocation ->invocation.getArgument(0));
+
+        // Act
+        // TODO: Call cardService.updateCard().
+        Card result=cardService.updateCard(1L,request);
+
+        // Assert
+        assertEquals("Costco Anywhere",result.getName());
+        assertEquals("Citi",result.getIssuer());
+        assertEquals("Visa",result.getNetwork());
+        assertEquals(BigDecimal.valueOf(95),result.getAnnualFee());
+        assertEquals(BigDecimal.valueOf(2.0),result.getDefaultCashbackPercent());
+        assertFalse(result.isActive());
+
+        // TODO: Verify that save() was called.
+        verify(cardRepository).save(costco);
     }
 }
