@@ -2,6 +2,7 @@ package com.julianmejiac.walletoptimizer.service;
 
 import com.julianmejiac.walletoptimizer.dto.CardRecommendationDTO;
 import com.julianmejiac.walletoptimizer.dto.CreateCardRequest;
+import com.julianmejiac.walletoptimizer.dto.RewardRuleRequest;
 import com.julianmejiac.walletoptimizer.dto.UpdateCardRequest;
 import com.julianmejiac.walletoptimizer.exception.CardNotFoundException;
 import com.julianmejiac.walletoptimizer.exception.DuplicateCardException;
@@ -239,11 +240,11 @@ public class CardServiceTest {
         when(cardRepository.findById(1L))
                 .thenReturn(Optional.of(costco));
 
-        // TODO: Configure cardRepository.save().
+
         when(cardRepository.save(any(Card.class))).thenAnswer(invocation ->invocation.getArgument(0));
 
         // Act
-        // TODO: Call cardService.updateCard().
+
         Card result=cardService.updateCard(1L,request);
 
         // Assert
@@ -254,7 +255,58 @@ public class CardServiceTest {
         assertEquals(BigDecimal.valueOf(2.0),result.getDefaultCashbackPercent());
         assertFalse(result.isActive());
 
-        // TODO: Verify that save() was called.
+
+        verify(cardRepository).save(costco);
+    }
+    @Test
+    void updateCardThrowsWhenCardNotFound(){
+        // Arrange
+        UpdateCardRequest request = new UpdateCardRequest(
+                "Costco Anywhere",
+                "Citi",
+                "Visa",
+                BigDecimal.valueOf(95),
+                BigDecimal.valueOf(2.0),
+                false
+        );
+
+        // findById(99L) returns no card.
+        when(cardRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(CardNotFoundException.class,()->cardService.updateCard(99L,request));
+        verify(cardRepository,never()).save(any(Card.class));
+    }
+    @Test
+    void addRewardSuccessfully() {
+        // Arrange
+        Card costco = new Card(
+                "Costco",
+                "Citi",
+                "Visa",
+                BigDecimal.ZERO,
+                BigDecimal.valueOf(1.5)
+        );
+
+        RewardRuleRequest request = new RewardRuleRequest(
+                "Gas",
+                BigDecimal.valueOf(5.0)
+        );
+
+        when(cardRepository.findById(1L))
+                .thenReturn(Optional.of(costco));
+
+        when(cardRepository.save(any(Card.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        cardService.addReward(1L,request);
+
+        // Assert
+        assertEquals(1,costco.getRewardRules().size());
+        assertEquals("Gas",costco.getRewardRules().get(0).getCategory());
+        assertEquals(BigDecimal.valueOf(5.0),costco.getRewardRules().get(0).getCashbackPercent());
+        
         verify(cardRepository).save(costco);
     }
 }
