@@ -6,6 +6,7 @@ import com.julianmejiac.walletoptimizer.dto.RewardRuleRequest;
 import com.julianmejiac.walletoptimizer.dto.UpdateCardRequest;
 import com.julianmejiac.walletoptimizer.exception.CardNotFoundException;
 import com.julianmejiac.walletoptimizer.exception.DuplicateCardException;
+import com.julianmejiac.walletoptimizer.exception.DuplicateRewardRuleException;
 import com.julianmejiac.walletoptimizer.exception.RewardRuleNotFoundException;
 import com.julianmejiac.walletoptimizer.model.Card;
 import com.julianmejiac.walletoptimizer.model.RewardRule;
@@ -16,6 +17,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static org.apache.logging.log4j.util.StringBuilders.equalsIgnoreCase;
 
 @Service
 public class CardService {
@@ -65,6 +68,13 @@ public class CardService {
 
     public Card addReward(Long cardId, RewardRuleRequest request){
         Card card=getCardById(cardId);
+        //Checking that the RewardRule is not already in the Card
+        for(RewardRule reward:card.getRewardRules()) {
+            if (reward.getCategory().equalsIgnoreCase(request.category())) {
+                throw new DuplicateRewardRuleException("Reward category already exists: " +request.category());
+            }
+        }
+        //Adding the rewardRule
         RewardRule rewardRule=new RewardRule();
         rewardRule.setCategory(request.category());
         rewardRule.setCashbackPercent(request.cashbackPercent());

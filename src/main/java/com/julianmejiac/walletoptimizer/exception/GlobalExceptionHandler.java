@@ -48,5 +48,12 @@ public class GlobalExceptionHandler {
 
         return error;
     }
+    @ExceptionHandler(DuplicateRewardRuleException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String,String> handleDuplicateRewardRule(DuplicateRewardRuleException exception){
+        Map<String,String> error = new HashMap<>();
+        error.put("error",exception.getMessage());
+        return error;
+    }
 
 }

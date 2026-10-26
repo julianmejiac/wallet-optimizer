@@ -6,6 +6,7 @@ import com.julianmejiac.walletoptimizer.dto.RewardRuleRequest;
 import com.julianmejiac.walletoptimizer.dto.UpdateCardRequest;
 import com.julianmejiac.walletoptimizer.exception.CardNotFoundException;
 import com.julianmejiac.walletoptimizer.exception.DuplicateCardException;
+import com.julianmejiac.walletoptimizer.exception.DuplicateRewardRuleException;
 import com.julianmejiac.walletoptimizer.exception.RewardRuleNotFoundException;
 import com.julianmejiac.walletoptimizer.model.Card;
 import com.julianmejiac.walletoptimizer.model.RewardRule;
@@ -306,7 +307,35 @@ public class CardServiceTest {
         assertEquals(1,costco.getRewardRules().size());
         assertEquals("Gas",costco.getRewardRules().get(0).getCategory());
         assertEquals(BigDecimal.valueOf(5.0),costco.getRewardRules().get(0).getCashbackPercent());
-        
+
         verify(cardRepository).save(costco);
+    }
+    @Test
+    void addRewardThrowsWhenCategoryAlreadyExists(){
+        // Arrange
+        Card costco = new Card(
+                "Costco",
+                "Citi",
+                "Visa",
+                BigDecimal.ZERO,
+                BigDecimal.valueOf(1.5)
+        );
+
+        costco.addRewardRule(
+                new RewardRule("Gas", BigDecimal.valueOf(5.0))
+        );
+
+        RewardRuleRequest request = new RewardRuleRequest(
+                "gas",
+                BigDecimal.valueOf(3.0)
+        );
+        when(cardRepository.findById(1L)).thenReturn(Optional.of(costco));
+        //Act & Assert
+        assertThrows(DuplicateRewardRuleException.class,()->cardService.addReward(1L,request));
+        verify(cardRepository,never()).save(any(Card.class));
+        assertEquals(1,costco.getRewardRules().size());
+        assertEquals("Gas", costco.getRewardRules().get(0).getCategory());
+        assertEquals(BigDecimal.valueOf(5.0), costco.getRewardRules().get(0).getCashbackPercent());
+
     }
 }
