@@ -111,6 +111,11 @@ public class CardService {
     public RewardRule updateReward(Long cardId, Long rewardId, RewardRuleRequest updatedRuleRequest){
         Card card= getCardById(cardId);
         RewardRule rewardRule=getRewardRuleById(card,rewardId);
+        for(RewardRule reward:card.getRewardRules()){
+            if(!reward.getId().equals(rewardId) && reward.getCategory().equalsIgnoreCase(updatedRuleRequest.category())){
+                throw new DuplicateRewardRuleException("New category will create a duplicate");
+            }
+        }
         rewardRule.setCategory(updatedRuleRequest.category());
         rewardRule.setCashbackPercent(updatedRuleRequest.cashbackPercent());
         cardRepository.save(card);

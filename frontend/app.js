@@ -560,6 +560,8 @@ async function saveRewardChanges(
     if (response.ok) {
         await loadRewardRules(cardId, rewardList);
     } else {
+        const errorData=await response.json();
+        alert(errorData.error||"Could not update reward rule")
         console.log("Could not update reward rule");
     }
 }

@@ -338,4 +338,42 @@ public class CardServiceTest {
         assertEquals(BigDecimal.valueOf(5.0), costco.getRewardRules().get(0).getCashbackPercent());
 
     }
+    @Test
+    void updateRewardThrowsWhenCategoryAlreadyExists() {
+        // Arrange
+        Card costco = new Card(
+                "Costco",
+                "Citi",
+                "Visa",
+                BigDecimal.ZERO,
+                BigDecimal.valueOf(1.5)
+        );
+
+        RewardRule gas = new RewardRule(
+                "Gas", BigDecimal.valueOf(5.0)
+        );
+        gas.setId(1L);
+
+        RewardRule grocery = new RewardRule(
+                "Grocery", BigDecimal.valueOf(3.0)
+        );
+        grocery.setId(2L);
+
+        costco.addRewardRule(gas);
+        costco.addRewardRule(grocery);
+
+        RewardRuleRequest request = new RewardRuleRequest(
+                "gas", BigDecimal.valueOf(4.0)
+        );
+
+        when(cardRepository.findById(10L))
+                .thenReturn(Optional.of(costco));
+
+        // Act & Assert
+        assertThrows(DuplicateRewardRuleException.class,()->cardService.updateReward(10L,2L,request));
+        assertEquals("Grocery", grocery.getCategory());
+        assertEquals(BigDecimal.valueOf(3.0), grocery.getCashbackPercent());
+        verify(cardRepository,never()).save(any(Card.class));
+
+    }
 }
